@@ -1,0 +1,586 @@
+@import url('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css');
+@import url('https://cdn.jsdelivr.net/npm/react-tabs@6.1.0/style/react-tabs.min.css');
+
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Titan+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Symbols'); /* Ensure this is imported */
+
+
+:root {
+  --color-background: light-dark(#fff, #242428);
+  --color-text: light-dark(#000, #fff);
+  --color-accent: #4285f4;
+  --color-error: #f53311;
+  --color-positive: #34a853; /* Added for positive feedback */
+
+
+  --font-display: 'Titan One', sans-serif;
+  --font-primary: 'Google Sans Flex', sans-serif;
+  --font-secondary: 'Google Sans', sans-serif;
+  --font-technical: 'Google Sans Code', sans-serif;
+  --font-symbols: 'Google Symbols', sans-serif;
+
+  --color-headline: light-dark(#000, #fff); 
+  --color-subtitle: light-dark(#666, #c8c8c8); 
+  --color-attribution: light-dark(#999, #e1e1e1); 
+
+  --header-height: 56px; 
+  --color-background-header: light-dark(#fff, #2c2c30);
+  --color-background-footer: light-dark(#f0f0f0, #1e1e20);
+  --color-video-container-background: light-dark(#f0f0f0, #3a3a3a); 
+  --color-video-placeholder-text: light-dark(#787878, #b0b0b0); 
+  --color-content-placeholder-border: light-dark(#ccc, #9a9b9c);
+  --color-content-placeholder-text: light-dark(#787878, #f4f4f4);
+
+  /* LLM Log Panel Colors */
+  --llm-log-bg: light-dark(#f9f9f9, #2e2e32);
+  --llm-log-border: light-dark(#e0e0e0, #404045);
+  --llm-log-header-bg: light-dark(#efefef, #38383c);
+  --llm-log-entry-border: light-dark(#ddd, #4a4a50);
+  --llm-log-prompt-bg: light-dark(#e3f2fd, #2a3a4a); 
+  --llm-log-response-bg: light-dark(#e8f5e9, #2c402e); 
+  --llm-log-error-bg: light-dark(#ffebee, #4d2e2e);   
+
+  /* Modal Colors (common for HowToUse, Refine, Embed, Deploy) */
+  --modal-overlay-bg: rgba(0, 0, 0, 0.6);
+  --modal-content-bg: light-dark(#ffffff, #2d2d30);
+  --modal-content-border: light-dark(#cccccc, #444447);
+  --modal-header-border: light-dark(#eeeeee, #3f3f42);
+  --modal-code-bg: light-dark(#f0f0f0, #252528); /* For code blocks in HowToUse/Deploy */
+  --modal-textarea-bg: light-dark(#f9f9f9, #252528); /* For textareas in Refine/Embed modals */
+  --modal-textarea-border: light-dark(#ccc, #555);
+  --modal-copy-button-bg: light-dark(#e0e0e0, #4a4a4a);
+  --modal-copy-button-hover-bg: light-dark(#d0d0d0, #5a5a5a);
+
+
+  /* Flowchart Styles for HowToUse Modal */
+  --flowchart-node-bg: light-dark(#e9effc, #3a4a6a);
+  --flowchart-node-border: light-dark(#c8d7f5, #5b7bc2);
+  --flowchart-arrow-color: light-dark(#555, #bbb);
+  --flowchart-subnode-bg: light-dark(#f7f9fd, #2e384d);
+
+}
+
+html,
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  font-weight: 400;
+  margin: 0;
+  max-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding: 0;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex; 
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6, p, blockquote, pre, ul, ol, dl, dt, dd, figure, figcaption, table, th, td, form, fieldset, legend, button, input, select, textarea {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  border: 2px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s;
+  font-family: inherit; 
+}
+button:focus { outline-color: var(--color-accent); }
+button:disabled { cursor: not-allowed; }
+
+.button-primary { 
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+.button-primary:hover, .button-primary:active { 
+  background-color: light-dark(hsl(from var(--color-accent) h s calc(l - 10%)), hsl(from var(--color-accent) h s calc(l + 10%)));
+  border-color: light-dark(hsl(from var(--color-accent) h s calc(l - 10%)), hsl(from var(--color-accent) h s calc(l + 10%)));
+}
+.button-primary:disabled { 
+  background-color: light-dark(#e0e0e0, #555);
+  border-color: light-dark(#e0e0e0, #555);
+  color: light-dark(#aaa, #888);
+  opacity: 0.7;
+}
+
+.button-secondary { 
+  background-color: transparent;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.button-secondary:hover, .button-secondary:active { 
+  background-color: var(--color-accent);
+  color: #fff;
+}
+.button-secondary:disabled { 
+  background-color: transparent;
+  border-color: light-dark(#ccc, #777);
+  color: light-dark(#aaa, #888);
+  opacity: 0.7;
+}
+
+
+input,
+textarea { 
+  --color-background: light-dark(transparent, #313131);
+  --color-background-disabled: transparent;
+  --color-border: light-dark(#ccc, #e5e5e5);
+  --color-border-disabled: light-dark(#ccc, #5e5e5e);
+  --color-text-disabled: light-dark(#dcdcdc, #464649);
+
+  background-color: var(--color-background);
+  border: 1px solid;
+  border-color: var(--color-border);
+  color: var(--color-text);
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  font-family: inherit; 
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s;
+  width: 100%; 
+}
+input:disabled, textarea:disabled { 
+  background-color: var(--color-background-disabled);
+  border-color: var(--color-border-disabled);
+  color: var(--color-text-disabled);
+  opacity: 0.7;
+}
+input::placeholder, textarea::placeholder { opacity: 0.5; }
+input:focus::placeholder, textarea:focus::placeholder { opacity: 0; }
+textarea { resize: vertical; min-height: 60px; }
+
+.app-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+.content-pusher { padding-top: var(--header-height); flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.main-container {
+  padding: 1.5rem; 
+  display: flex;
+  gap: 1.5rem; 
+  flex-grow: 1; 
+  box-sizing: border-box;
+  overflow: hidden; 
+}
+.main-container.output-expanded .left-side {
+  flex-basis: 30%;
+  /* On smaller screens, hide left side when output is expanded */
+}
+.main-container.output-expanded .right-side {
+  flex-basis: 70%;
+}
+
+@media (max-width: 1024px) { /* Tablet and below */
+    .main-container.output-expanded .left-side {
+        display: none; /* Hide left side completely */
+    }
+    .main-container.output-expanded .right-side {
+        flex-basis: 100%;
+    }
+}
+@media (max-width: 768px) { /* Mobile */
+  .main-container { flex-direction: column; padding: 1rem; gap: 1rem; overflow: auto; }
+  .main-container.output-expanded .left-side { display: flex; flex-basis: auto; } /* Re-show if it was hidden by tablet rule */
+  .main-container.output-expanded .right-side { flex-basis: auto; }
+}
+
+.left-side {
+  flex-basis: 40%; /* Default width */
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  overflow-y: auto; 
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+  padding-right: 0.5rem; 
+  transition: flex-basis 0.3s ease-in-out;
+}
+.left-side::-webkit-scrollbar { display: none; }
+
+@media (max-width: 768px) {
+  .left-side { width: 100%; height: auto; overflow: visible; padding-right: 0; flex-basis: auto; }
+}
+
+.input-section { width: 100%; margin-bottom: 1rem; }
+.input-container { width: 100%; margin-bottom: 0.75rem; }
+/* .input-container-topic { margin-top: 0.5rem; } REMOVED as merged */
+.input-label { display: block; margin-bottom: 0.25rem; font-size: 0.9rem; }
+/* .youtube-input, .topic-input { width: 100%; } REMOVED, new class below */
+.content-input { /* Style for the new combined textarea */
+  width: 100%;
+  min-height: 80px; /* Default min height, adjust as needed */
+}
+
+
+.educational-materials-request {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid light-dark(#e0e0e0, #444);
+  border-radius: 4px;
+  background-color: light-dark(#f9f9f9, #2e2e32);
+}
+.educational-materials-request h4 {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+.educational-materials-request div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+.educational-materials-request input[type="checkbox"] {
+  width: auto; /* Override default full width for input */
+  margin-right: 0.5rem;
+  accent-color: var(--color-accent); /* Style checkbox color */
+}
+.educational-materials-request label {
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+
+.button-container { width: 100%; display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.submit-button { flex: 1; }
+
+.video-container { 
+  width: 100%; 
+  aspect-ratio: 16 / 9; 
+  background-color: var(--color-video-container-background); 
+  border-radius: 8px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  overflow: hidden; 
+}
+.video-iframe { 
+  width: 100%; 
+  height: 100%; 
+  border: none; 
+}
+.video-placeholder { 
+  color: var(--color-video-placeholder-text); 
+  font-style: italic; 
+  font-size: 0.95rem; /* Slightly larger */
+  padding: 1rem;
+  text-align: center;
+}
+
+.right-side {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 60%; /* Default width */
+  gap: 1rem;
+  height: 100%; 
+  overflow: hidden; 
+  transition: flex-basis 0.3s ease-in-out;
+}
+@media (max-width: 768px) {
+  .right-side { height: auto; min-height: 60vh; flex-basis: auto; }
+}
+
+.content-area-header {
+  display: flex;
+  justify-content: flex-end; /* Align items like expand button to the right */
+  padding: 0 0.5rem 0.5rem 0.5rem; /* Padding around header items */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+.expand-toggle-button {
+  padding: 0.3rem 0.5rem; /* Smaller padding */
+  font-size: 0.8rem; /* Smaller font */
+}
+.expand-toggle-button .material-symbols-outlined {
+  font-size: 1.2rem; /* Smaller icon */
+}
+
+.content-area {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  min-height: 300px; 
+  overflow: hidden; 
+}
+.main-container.output-expanded .content-area {
+   /* Potentially adjust min-height or other properties if needed */
+}
+
+@media (max-width: 768px) {
+  .content-area { max-height: none; min-height: 550px; }
+}
+
+.content-placeholder { 
+  border: 2px dashed var(--color-content-placeholder-border);
+  color: var(--color-content-placeholder-text);
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center;
+  padding: 2rem;
+  flex: 1; 
+  border-radius: 8px; 
+  font-size: 1.1rem;
+}
+.gallery-container { width: 100%; } /* Kept for potential future use, but not active */
+.desktop-gallery-container { display: none; } /* Examples removed */
+.mobile-gallery-container { display: none; } /* Examples removed */
+
+
+/* LLM Log Panel Styles */
+.llm-log-panel {
+  background-color: var(--llm-log-bg);
+  border: 1px solid var(--llm-log-border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  max-height: 300px; 
+  min-height: 150px; 
+  overflow: hidden; 
+  margin-top: 1rem; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  flex-shrink: 0; /* Prevent shrinking when content area grows */
+}
+.main-container.output-expanded .llm-log-panel {
+    max-height: 400px; /* Allow more height when output is expanded */
+}
+.llm-log-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 0.5rem 1rem; 
+  background-color: var(--llm-log-header-bg); 
+  border-bottom: 1px solid var(--llm-log-border); 
+  border-top-left-radius: 7px; /* Match panel radius */
+  border-top-right-radius: 7px;
+}
+.llm-log-header h3 { font-size: 0.9rem; margin: 0; font-weight: 500;}
+.clear-log-button { 
+  padding: 0.25rem 0.5rem; 
+  font-size: 0.75rem; 
+  border-width: 1px;
+}
+.llm-log-entries { 
+  flex-grow: 1; 
+  overflow-y: auto; 
+  padding: 0.75rem; 
+  font-size: 0.8rem;
+}
+.empty-log-message { 
+  text-align: center; 
+  color: var(--color-subtitle); 
+  padding: 1rem; 
+  font-style: italic; 
+}
+.log-entry { 
+  margin-bottom: 0.75rem; 
+  padding: 0.5rem; 
+  border: 1px solid var(--llm-log-entry-border); 
+  border-radius: 4px; 
+}
+.log-entry-prompt { background-color: var(--llm-log-prompt-bg); }
+.log-entry-response { background-color: var(--llm-log-response-bg); }
+.log-entry-error { background-color: var(--llm-log-error-bg); }
+.log-entry-meta { 
+  display: flex; 
+  justify-content: space-between; 
+  margin-bottom: 0.3rem; 
+  font-size: 0.7rem; 
+  color: var(--color-subtitle); 
+}
+.log-entry-timestamp { font-weight: 500; }
+.log-entry-type { text-transform: uppercase; font-weight: bold; }
+.log-entry-data pre { 
+  white-space: pre-wrap; 
+  word-break: break-all; 
+  margin: 0; 
+  font-family: var(--font-technical); 
+  font-size: 0.75rem;
+}
+.log-entry-data .error-stack { font-size: 0.7rem; opacity: 0.8; margin-top: 0.3rem; }
+.log-entry-data strong { font-weight: 500; display: block; margin-bottom: 0.2rem; }
+.grounding-metadata-log { margin-top: 0.5rem; font-size: 0.75rem;}
+.grounding-metadata-log ul { padding-left: 1rem; margin: 0.2rem 0 0 0; list-style-type: disc;}
+.grounding-metadata-log li a { color: var(--color-accent); text-decoration: none;}
+.grounding-metadata-log li a:hover { text-decoration: underline;}
+
+
+/* Material Symbols Outlined */
+.material-symbols-outlined { 
+  font-family: var(--font-symbols);
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle; /* Better alignment with text */
+  user-select: none; /* Prevent selection of icon text */
+}
+
+/* Common Modal Styles (used by HowToUse, Refine, Embed, Deploy modals) */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--modal-overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+.modal-content {
+  background-color: var(--modal-content-bg);
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 800px; 
+  max-height: 90vh; 
+  overflow-y: auto; 
+  position: relative; 
+  border: 1px solid var(--modal-content-border);
+}
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-display);
+  color: var(--color-accent);
+  text-align: center;
+  font-size: 1.8rem;
+  border-bottom: 1px solid var(--modal-header-border);
+  padding-bottom: 0.75rem;
+}
+.modal-close-button {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: none; border: none;
+  font-size: 1.8rem; 
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0.25rem;
+  line-height: 1;
+}
+.modal-close-button:hover { color: var(--color-accent); }
+.modal-close-button .material-symbols-outlined { font-size: inherit; }
+
+.modal-section { margin-bottom: 1.5rem; }
+.modal-section h3 { font-size: 1.25rem; color: var(--color-text); margin-bottom: 0.75rem; font-family: var(--font-secondary); font-weight: 500; }
+.modal-section p, .modal-section li { 
+    color: var(--color-text);
+    line-height: 1.6;
+}
+.modal-section ul, .modal-section ol { 
+    color: var(--color-text);
+    padding-left: 1.5rem; 
+    margin-bottom: 1rem;
+}
+.modal-section ul ul, .modal-section ol ul, 
+.modal-section ul ol, .modal-section ol ol {
+  margin-top: 0.5rem; /* Add some space before nested lists */
+  margin-bottom: 0.5rem;
+}
+.modal-section li { margin-bottom: 0.3rem; } /* Space between list items */
+
+.modal-section code { 
+    background-color: var(--modal-code-bg);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-family: var(--font-technical);
+    font-size: 0.9em;
+}
+.modal-section strong { 
+    font-weight: bold;
+    color: inherit; 
+}
+.modal-section em { 
+    font-style: italic;
+}
+
+
+/* Styles for RefineAppModal and EmbedCodeModal textareas and buttons */
+.modal-textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 0.75rem;
+  border: 1px solid var(--modal-textarea-border);
+  border-radius: 4px;
+  font-family: var(--font-technical);
+  font-size: 0.9rem;
+  background-color: var(--modal-textarea-bg);
+  color: var(--color-text);
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+.modal-textarea:focus {
+  outline: 2px solid var(--color-accent);
+  border-color: var(--color-accent);
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.modal-copy-button {
+  background-color: var(--modal-copy-button-bg);
+  color: var(--color-text);
+  border: 1px solid var(--modal-textarea-border);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  display: inline-flex; /* for icon alignment */
+  align-items: center;
+  gap: 0.3rem;
+}
+.modal-copy-button:hover {
+  background-color: var(--modal-copy-button-hover-bg);
+}
+.modal-copy-button .material-symbols-outlined {
+  font-size: 1.1em;
+}
+.embed-code-label { /* Specific to EmbedCodeModal */
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+
+/* Flowchart Styles from HowToUseModal */
+.flowchart { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-size: 0.85rem;}
+.flow-node { background-color: var(--flowchart-node-bg); border: 1px solid var(--flowchart-node-border); padding: 0.75rem; border-radius: 6px; text-align: center; width: 90%; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.flow-node strong { display: block; margin-bottom: 0.3rem; font-size: 1.1em; color: var(--color-accent); }
+.flow-sub-item, .flow-detail { font-size: 0.9em; margin-top: 0.2rem; background-color: var(--flowchart-subnode-bg); padding: 0.2rem 0.4rem; border-radius: 3px; }
+.flow-arrow { font-size: 1.5em; color: var(--flowchart-arrow-color); }
+.sub-arrow { font-size: 1.2em; margin: 0.2rem 0; }
+.process-node { position: relative; } /* For LLM link positioning */
+.flow-sub-process { margin: 0.5rem 0; padding: 0.5rem; border: 1px dashed #ccc; border-radius: 4px; background: light-dark(rgba(0,0,0,0.02), rgba(255,255,255,0.02)); }
+.sub-node strong { font-size: 1em; color: var(--color-text); }
+.llm-link { position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.8em; color: var(--color-subtitle); display: flex; align-items: center; gap: 2px; background: light-dark(#fff, #28282c); padding: 2px 4px; border-radius: 3px; border: 1px solid var(--llm-log-border); }
+.llm-link.left { left: -40px; }
+.llm-link.right { right: -40px; }
+.llm-link span { font-size: 1.2em; }
+.llm-panel-node { margin-top: 0.5rem; width: auto; padding: 0.5rem 0.75rem; font-style: italic; background-color: var(--llm-log-bg); border-color: var(--llm-log-border); }
+.llm-panel-node div { font-size: 0.9em; }
+
+
+@media (max-width: 600px) {
+  .modal-content { padding: 1rem 1.5rem; }
+  .modal-title { font-size: 1.5rem; }
+  .modal-section h3 { font-size: 1.15rem; } /* Used by HowToUseModal */
+  .modal-section p, .modal-section li { font-size: 0.9rem; }
+  .flow-node { width: 95%; }
+  .llm-link { display: none; } /* Hide LLM links on small screens for simplicity */
+  .content-actions-bar .action-button {
+    flex-basis: calc(50% - 0.25rem); /* Two buttons per row, accounting for gap */
+  }
+}
