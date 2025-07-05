@@ -88,6 +88,8 @@ const LlmLogPanel: React.FC<LlmLogPanelProps> = ({ interactions, onClearLog }) =
               )}
             </div>
           );
+        case 'TOKEN':
+          return <pre className="token-entry">{interaction.data}</pre>;
         case 'ERROR':
           const error = interaction.data as Error;
           return (

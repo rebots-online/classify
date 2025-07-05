@@ -30,7 +30,7 @@ export interface ContentBasis {
 export interface LlmInteraction {
   id: string;
   timestamp: string;
-  type: 'PROMPT' | 'RESPONSE' | 'ERROR';
+  type: 'PROMPT' | 'RESPONSE' | 'ERROR' | 'TOKEN';
   model?: string;
   data: any;
 }
@@ -63,7 +63,7 @@ export default function App() {
 
   const [llmInteractions, setLlmInteractions] = useState<LlmInteraction[]>([]);
   const [showLlmLogPanel, setShowLlmLogPanel] = useState(true); 
-  const [showHowToUseModal, setShowHowToUseModal] = useState(true); 
+  const [showHowToUseModal, setShowHowToUseModal] = useState(false);
 
   const [requestedMaterials, setRequestedMaterials] = useState<EducationalMaterialRequest>({
     lessonPlan: false,

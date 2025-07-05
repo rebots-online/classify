@@ -187,6 +187,10 @@ const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose }) => {
           </ul>
         </div>
 
+        <div className="modal-actions" style={{textAlign: 'center', marginTop: '1rem'}}>
+          <button onClick={onClose} className="button-primary">Get Started!</button>
+        </div>
+
       </div>
     </div>
   );

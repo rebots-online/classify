@@ -1,0 +1,35 @@
+%% Architecture Diagram for Video to Learning App
+flowchart TB
+    subgraph UI
+        App
+        Header
+        Footer
+        HowToUseModal
+        LlmLogPanel
+        ContentContainer
+        RefineAppModal
+        EmbedCodeModal
+        DeployModal
+    end
+    subgraph Lib
+        parseJSON
+        parseHTML
+        textGeneration
+        youtube
+        prompts
+    end
+    App --> Header
+    App --> Footer
+    App --> HowToUseModal
+    App --> LlmLogPanel
+    App --> ContentContainer
+    ContentContainer --> RefineAppModal
+    ContentContainer --> EmbedCodeModal
+    ContentContainer --> DeployModal
+    ContentContainer --> LocalStorage
+    ContentContainer --> textGeneration
+    ContentContainer --> parseHTML
+    ContentContainer --> parseJSON
+    ContentContainer --> prompts
+    textGeneration --> GoogleGenAI
+    App --> youtube
