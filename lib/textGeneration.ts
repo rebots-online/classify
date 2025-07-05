@@ -129,19 +129,22 @@ export async function generateText(
   }
 
   try {
-    let genAiResponse: GenerateContentResponse;
+    let genAiResponse: GenerateContentResponse | undefined;
     let collectedText = '';
     if (stream || onToken) {
       const streamResp = await ai.models.generateContentStream(request);
-      for await (const chunk of streamResp.stream) {
+      for await (const chunk of streamResp) {
         const token = chunk.text || '';
         collectedText += token;
+        genAiResponse = chunk;
         if (onToken) onToken(token);
         if (onInteraction) {
           onInteraction({type: 'TOKEN', data: token, modelName});
         }
       }
-      genAiResponse = await streamResp.response;
+      if (!genAiResponse) {
+        throw new Error('No response received from streaming');
+      }
       // Overwrite text with collected text for convenience
       (genAiResponse as any).text = collectedText;
     } else {
