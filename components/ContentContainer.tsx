@@ -107,6 +107,7 @@ export default forwardRef(function ContentContainer(
           basePrompt: LESSON_PLAN_PROMPT_TEMPLATE.replace('[APP_SPECIFICATION_HERE]', currentSpec),
           safetySettings: defaultSafetySettings,
           onInteraction: onLlmInteraction,
+          stream: true,
         });
         setLessonPlan(text);
       } catch (err) {
@@ -123,6 +124,7 @@ export default forwardRef(function ContentContainer(
           basePrompt: HANDOUT_PROMPT_TEMPLATE.replace('[APP_SPECIFICATION_HERE]', currentSpec),
           safetySettings: defaultSafetySettings,
           onInteraction: onLlmInteraction,
+          stream: true,
         });
         setHandout(text);
       } catch (err) {
@@ -140,6 +142,7 @@ export default forwardRef(function ContentContainer(
           safetySettings: defaultSafetySettings,
           responseMimeType: "application/json",
           onInteraction: onLlmInteraction,
+          stream: true,
         });
         const parsedQuiz = parseJSON(text);
         setQuiz(parsedQuiz.quiz || parsedQuiz); 
@@ -163,6 +166,7 @@ export default forwardRef(function ContentContainer(
         responseMimeType: "application/json",
         safetySettings: defaultSafetySettings,
         onInteraction: onLlmInteraction,
+        stream: true,
       });
     } else if (topicOrDetails) {
       specResponse = await generateText({
@@ -171,6 +175,7 @@ export default forwardRef(function ContentContainer(
         safetySettings: defaultSafetySettings,
         useGoogleSearch: true,
         onInteraction: onLlmInteraction,
+        stream: true,
       });
     } else {
       throw new Error("No content basis (video URL or topic) provided for spec generation.");
@@ -191,6 +196,7 @@ export default forwardRef(function ContentContainer(
       basePrompt: generatedSpecText,
       safetySettings: defaultSafetySettings,
       onInteraction: onLlmInteraction,
+      stream: true,
     });
     const generatedCode = parseHTML(codeResponseText);
 
@@ -204,6 +210,7 @@ export default forwardRef(function ContentContainer(
       basePrompt: currentSpec,
       safetySettings: defaultSafetySettings,
       onInteraction: onLlmInteraction,
+      stream: true,
     });
     const generatedCode = parseHTML(codeResponseText);
     return generatedCode;
@@ -380,8 +387,43 @@ export default forwardRef(function ContentContainer(
   const handleEmbedModalOpen = () => setShowEmbedModal(true);
   const handleEmbedModalClose = () => setShowEmbedModal(false);
 
-  const handleDeployModalOpen = () => setShowDeployModal(true); 
-  const handleDeployModalClose = () => setShowDeployModal(false); 
+  const handleDeployModalOpen = () => setShowDeployModal(true);
+  const handleDeployModalClose = () => setShowDeployModal(false);
+
+  const handleSaveProject = () => {
+    const name = prompt('Project name?');
+    if (!name) return;
+    const data = {
+      spec,
+      code,
+      lessonPlan,
+      handout,
+      quiz,
+    };
+    localStorage.setItem(`project_${name}`, JSON.stringify(data));
+    alert('Project saved');
+  };
+
+  const handleLoadProject = () => {
+    const keys = Object.keys(localStorage).filter(k => k.startsWith('project_'));
+    if (keys.length === 0) { alert('No saved projects'); return; }
+    const name = prompt(`Load which project?\n${keys.map(k=>k.replace('project_','')).join(', ')}`);
+    if (!name) return;
+    const raw = localStorage.getItem(`project_${name}`);
+    if (!raw) { alert('Project not found'); return; }
+    try {
+      const data = JSON.parse(raw);
+      setSpec(data.spec || '');
+      setCode(data.code || '');
+      setLessonPlan(data.lessonPlan || null);
+      setHandout(data.handout || null);
+      setQuiz(data.quiz || null);
+      setLoadingState('ready');
+      setActiveTabIndex(2);
+    } catch (e) {
+      alert('Failed to load project');
+    }
+  };
 
   const renderLoadingSpinner = () => (
     <div className="loading-container">
@@ -515,6 +557,12 @@ export default forwardRef(function ContentContainer(
             disabled={!code || isLoading || loadingState === 'idle'}
             className="button-secondary action-button">
             <span className="material-symbols-outlined">publish</span> Deploy to Web
+          </button>
+          <button onClick={handleSaveProject} className="button-secondary action-button">
+            <span className="material-symbols-outlined">save</span> Save Project
+          </button>
+          <button onClick={handleLoadProject} className="button-secondary action-button">
+            <span className="material-symbols-outlined">folder_open</span> Load Project
           </button>
       </div>
 

@@ -402,13 +402,14 @@ textarea { resize: vertical; min-height: 60px; }
 }
 .log-entry-timestamp { font-weight: 500; }
 .log-entry-type { text-transform: uppercase; font-weight: bold; }
-.log-entry-data pre { 
-  white-space: pre-wrap; 
-  word-break: break-all; 
-  margin: 0; 
-  font-family: var(--font-technical); 
+.log-entry-data pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  font-family: var(--font-technical);
   font-size: 0.75rem;
 }
+.token-entry { color: var(--color-subtitle); display: inline; }
 .log-entry-data .error-stack { font-size: 0.7rem; opacity: 0.8; margin-top: 0.3rem; }
 .log-entry-data strong { font-weight: 500; display: block; margin-bottom: 0.2rem; }
 .grounding-metadata-log { margin-top: 0.5rem; font-size: 0.75rem;}

@@ -20,21 +20,23 @@ import {
 const GEMINI_API_KEY = process.env.API_KEY;
 
 export interface TextGenerationInteraction {
-  type: 'PROMPT' | 'RESPONSE' | 'ERROR';
-  data: any; // The raw request for PROMPT, GenerateContentResponse for RESPONSE, or Error for ERROR
+  type: 'PROMPT' | 'RESPONSE' | 'ERROR' | 'TOKEN';
+  data: any; // Raw request for PROMPT, GenerateContentResponse for RESPONSE, Error for ERROR, or string token for TOKEN
   modelName?: string;
 }
 
 export interface GenerateTextOptions {
   modelName: string;
-  basePrompt: string; 
-  videoUrl?: string; 
-  additionalUserText?: string; 
+  basePrompt: string;
+  videoUrl?: string;
+  additionalUserText?: string;
   temperature?: number;
   safetySettings?: SafetySetting[];
   responseMimeType?: string;
-  useGoogleSearch?: boolean; 
+  useGoogleSearch?: boolean;
+  stream?: boolean;
   onInteraction?: (interaction: TextGenerationInteraction) => void; // Added callback
+  onToken?: (token: string) => void;
 }
 
 export interface TextGenerationResponse { // This remains for the function's return type
@@ -60,7 +62,9 @@ export async function generateText(
     safetySettings,
     responseMimeType,
     useGoogleSearch = false,
+    stream = false,
     onInteraction, // Destructure callback
+    onToken,
   } = options;
 
   if (!GEMINI_API_KEY) {
@@ -125,7 +129,24 @@ export async function generateText(
   }
 
   try {
-    const genAiResponse: GenerateContentResponse = await ai.models.generateContent(request); 
+    let genAiResponse: GenerateContentResponse;
+    let collectedText = '';
+    if (stream || onToken) {
+      const streamResp = await ai.models.generateContentStream(request);
+      for await (const chunk of streamResp.stream) {
+        const token = chunk.text || '';
+        collectedText += token;
+        if (onToken) onToken(token);
+        if (onInteraction) {
+          onInteraction({type: 'TOKEN', data: token, modelName});
+        }
+      }
+      genAiResponse = await streamResp.response;
+      // Overwrite text with collected text for convenience
+      (genAiResponse as any).text = collectedText;
+    } else {
+      genAiResponse = await ai.models.generateContent(request);
+    }
 
     if (onInteraction) {
       onInteraction({type: 'RESPONSE', data: genAiResponse, modelName});

@@ -17,9 +17,27 @@ export const parseJSON = (str: string): any => {
   try {
     return JSON.parse(jsonStr);
   } catch (e) {
-    console.error("Failed to parse JSON content:", e, "String after fence removal:", jsonStr, "Original string:", str);
-    // Rethrow with a more informative message
-    throw new Error(`Failed to parse JSON response. ${e instanceof Error ? e.message : String(e)}. Preview: ${jsonStr.substring(0, 200)}...`);
+    try {
+      const firstBrace = jsonStr.indexOf('{');
+      const lastBrace = jsonStr.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        const potentialJson = jsonStr.slice(firstBrace, lastBrace + 1);
+        return JSON.parse(potentialJson);
+      }
+    } catch {
+      // ignore and fall through
+    }
+    console.error(
+      "Failed to parse JSON content:",
+      e,
+      "String after fence removal:",
+      jsonStr,
+      "Original string:",
+      str,
+    );
+    throw new Error(
+      `Failed to parse JSON response. ${e instanceof Error ? e.message : String(e)}. Preview: ${jsonStr.substring(0, 200)}...`,
+    );
   }
 };
 
