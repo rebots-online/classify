@@ -11,6 +11,10 @@ flowchart TB
         EmbedCodeModal
         DeployModal
     end
+    subgraph Bootstrap
+        indexTsx
+        DataContext
+    end
     subgraph Lib
         parseJSON
         parseHTML
@@ -33,3 +37,6 @@ flowchart TB
     ContentContainer --> prompts
     textGeneration --> GoogleGenAI
     App --> youtube
+    indexTsx --> DataContext
+    indexTsx --> App
+    App --> DataContext
