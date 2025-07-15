@@ -269,7 +269,7 @@ export default function App() {
                  )}
               </div>
               <div className="content-area">
-                {contentBasis ? (
+                {true ? (
                   <ContentContainer
                     key={reloadCounter}
                     contentBasisInput={contentBasis}
