@@ -86,7 +86,15 @@ export async function generateText(
   const fullPrompt = basePrompt + (additionalUserText ? `\n${additionalUserText}` : '');
 
   if (provider === 'openrouter') {
-    const openai = new OpenAI({ apiKey, baseURL: 'https://openrouter.ai/api/v1', dangerouslyAllowBrowser: true });
+    const openai = new OpenAI({
+      apiKey,
+      baseURL: 'https://openrouter.ai/api/v1',
+      dangerouslyAllowBrowser: true,
+      defaultHeaders: {
+        "HTTP-Referer": window.location.origin,
+        "X-Title": "Video to Learning App"
+      }
+    });
 
     const messages = [{ role: 'user', content: fullPrompt }];
 
