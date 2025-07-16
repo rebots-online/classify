@@ -96,8 +96,7 @@ export async function generateText(
       dangerouslyAllowBrowser: true,
       defaultHeaders: {
         "HTTP-Referer": window.location.origin,
-        "X-Title": "Video to Learning App",
-        "Authorization": `Bearer ${apiKey}`
+        "X-Title": "Video to Learning App"
       }
     });
 
