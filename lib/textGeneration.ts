@@ -17,7 +17,7 @@ import {
   GroundingMetadata, 
 } from '@google/genai';
 
-import { OpenAI } from 'openai';
+// Using fetch directly for OpenRouter calls to avoid library header issues
 import { Anthropic } from '@anthropic-ai/sdk';
 
 
@@ -89,20 +89,6 @@ export async function generateText(
     if (!apiKey) {
       throw new Error('OpenRouter API key is required');
     }
-    console.log('Using OpenRouter with API key:', apiKey ? 'API key provided' : 'No API key provided');
-    console.log('API key length:', apiKey?.length || 0);
-    console.log('API key prefix:', apiKey?.substring(0, 8) + '...');
-    console.log('Full API key for debugging:', apiKey);
-    const openai = new OpenAI({
-      apiKey: apiKey,
-      baseURL: 'https://openrouter.ai/api/v1',
-      dangerouslyAllowBrowser: true,
-      defaultHeaders: {
-        "HTTP-Referer": window.location.origin,
-        "X-Title": "Video to Learning App",
-        "Authorization": `Bearer ${apiKey}`
-      }
-    });
 
     const messages = [{ role: 'user', content: fullPrompt }];
 
@@ -118,33 +104,71 @@ export async function generateText(
       onInteraction({type: 'PROMPT', data: {model: modelName, messages}, modelName});
     }
 
+    const requestBody = {
+      model: modelName,
+      messages,
+      temperature,
+      stream: stream || Boolean(onToken),
+    };
+
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': window.location.origin,
+      'X-Title': 'Video to Learning App',
+    };
+
+    const url = 'https://openrouter.ai/api/v1/chat/completions';
+
     try {
       let collectedText = '';
-      if (stream || onToken) {
-        const streamResp = await openai.chat.completions.create({
-          model: modelName,
-          messages,
-          temperature,
-          stream: true,
+      if (requestBody.stream) {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody),
         });
-
-        for await (const chunk of streamResp) {
-          const token = chunk.choices[0]?.delta?.content || '';
-          collectedText += token;
-          if (onToken) onToken(token);
-          if (onInteraction) onInteraction({type: 'TOKEN', data: token, modelName});
+        if (!resp.ok || !resp.body) {
+          throw new Error(`${resp.status} ${resp.statusText}`);
+        }
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        while (!done) {
+          const { value, done: doneReading } = await reader.read();
+          if (doneReading) break;
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const data = trimmed.replace(/^data:\s*/, '');
+            if (data === '[DONE]') { done = true; break; }
+            try {
+              const parsed = JSON.parse(data);
+              const token = parsed.choices?.[0]?.delta?.content || '';
+              collectedText += token;
+              if (onToken) onToken(token);
+              if (onInteraction) onInteraction({type: 'TOKEN', data: token, modelName});
+            } catch (e) {
+              console.error('Failed to parse stream chunk', e, data);
+            }
+          }
         }
       } else {
-        const response = await openai.chat.completions.create({
-          model: modelName,
-          messages,
-          temperature,
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody),
         });
-        collectedText = response.choices[0].message.content || '';
+        if (!resp.ok) {
+          throw new Error(`${resp.status} ${resp.statusText}`);
+        }
+        const json = await resp.json();
+        collectedText = json.choices?.[0]?.message?.content || '';
       }
 
       if (onInteraction) onInteraction({type: 'RESPONSE', data: {text: collectedText}, modelName});
-
       return { text: collectedText };
     } catch (error) {
       if (onInteraction) onInteraction({type: 'ERROR', data: error, modelName});
