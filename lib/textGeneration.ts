@@ -23,6 +23,13 @@ import { Anthropic } from '@anthropic-ai/sdk';
 
 const GEMINI_API_KEY = process.env.API_KEY;
 
+function sanitizeApiKey(key: string): string {
+  let trimmed = key.trim();
+  // Remove any existing 'Bearer' prefix, case-insensitive
+  trimmed = trimmed.replace(/^bearer\s+/i, '');
+  return `Bearer ${trimmed}`;
+}
+
 export interface TextGenerationInteraction {
   type: 'PROMPT' | 'RESPONSE' | 'ERROR' | 'TOKEN';
   data: any; // Raw request for PROMPT, GenerateContentResponse for RESPONSE, Error for ERROR, or string token for TOKEN
@@ -111,10 +118,7 @@ export async function generateText(
       stream: stream || Boolean(onToken),
     };
 
-    let sanitizedKey = apiKey.trim();
-    if (!sanitizedKey.toLowerCase().startsWith('bearer ')) {
-      sanitizedKey = `Bearer ${sanitizedKey}`;
-    }
+    const sanitizedKey = sanitizeApiKey(apiKey);
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',

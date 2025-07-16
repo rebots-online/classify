@@ -15,6 +15,7 @@ flowchart TB
         parseJSON
         parseHTML
         textGeneration
+        sanitizeApiKey
         youtube
         prompts
     end
@@ -31,7 +32,8 @@ flowchart TB
     ContentContainer --> parseHTML
     ContentContainer --> parseJSON
     ContentContainer --> prompts
+    textGeneration --> sanitizeApiKey
+    sanitizeApiKey --> OpenRouter
     textGeneration --> GoogleGenAI
-    textGeneration --> OpenRouter
     textGeneration --> Anthropic
     App --> youtube
