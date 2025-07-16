@@ -86,20 +86,14 @@ export async function generateText(
   const fullPrompt = basePrompt + (additionalUserText ? `\n${additionalUserText}` : '');
 
   if (provider === 'openrouter') {
-
-
-
-  let effectiveApiKey = apiKey;
-
-
-
     const openai = new OpenAI({
-      apiKey: effectiveApiKey || '',
+      apiKey: apiKey || '',
       baseURL: 'https://openrouter.ai/api/v1',
       dangerouslyAllowBrowser: true,
       defaultHeaders: {
         "HTTP-Referer": window.location.origin,
-        "X-Title": "Video to Learning App"
+        "X-Title": "Video to Learning App",
+        "Authorization": `Bearer ${apiKey || ''}`
       }
     });
 
