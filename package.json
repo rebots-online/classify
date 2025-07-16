@@ -12,7 +12,6 @@
     "@anthropic-ai/sdk": "^0.56.0",
     "@google/genai": "^1.0.1",
     "@monaco-editor/react": "^4.7.0",
-    "openai": "^5.9.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-tabs": "^6.1.0",
