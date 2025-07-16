@@ -90,6 +90,8 @@ export async function generateText(
       throw new Error('OpenRouter API key is required');
     }
     console.log('Using OpenRouter with API key:', apiKey ? 'API key provided' : 'No API key provided');
+    console.log('API key length:', apiKey?.length || 0);
+    console.log('API key prefix:', apiKey?.substring(0, 8) + '...');
     const openai = new OpenAI({
       apiKey: apiKey,
       baseURL: 'https://openrouter.ai/api/v1',
