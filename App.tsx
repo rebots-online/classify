@@ -59,7 +59,12 @@ export default function App() {
   } | null>(null);
 
   const [reloadCounter, setReloadCounter] = useState(0);
+  const [inputValue, setInputValue] = useState(localStorage.getItem('lastInput') || '');
   const contentInputRef = useRef<HTMLTextAreaElement>(null); // Single input ref
+
+  useEffect(() => {
+    localStorage.setItem('lastInput', inputValue);
+  }, [inputValue]);
 
   const [llmInteractions, setLlmInteractions] = useState<LlmInteraction[]>([]);
   const [showLlmLogPanel, setShowLlmLogPanel] = useState(true); 
@@ -196,12 +201,14 @@ export default function App() {
                   <textarea
                     ref={contentInputRef}
                     id="content-input"
-                    className="content-input" // New class for combined input
-                    rows={4} // Adjusted rows
+                    className="content-input"
+                    rows={4}
                     placeholder="e.g., 'https://www.youtube.com/watch?v=xyz' or 'Quantum physics for beginners' or combine both!"
                     disabled={isFormDisabled}
                     onKeyDown={handleKeyDown}
-                    onChange={() => {
+                    value={inputValue}
+                    onChange={(e) => {
+                      setInputValue(e.target.value);
                       setContentBasis(null);
                     }}
                   />
