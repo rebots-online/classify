@@ -123,13 +123,16 @@ export async function generateText(
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       'Authorization': sanitizedKey,
-      'HTTP-Referer': window.location.origin,
+      'HTTP-Referer': 'https://classify-onel--56872--96435430.local-credentialless.webcontainer.io',
       'X-Title': 'Video to Learning App',
     };
 
     const url = 'https://openrouter.ai/api/v1/chat/completions';
 
     try {
+      console.log('OpenRouter request headers:', headers);
+      console.log('OpenRouter request body:', JSON.stringify(requestBody, null, 2));
+      
       let collectedText = '';
       if (requestBody.stream) {
         const resp = await fetch(url, {
@@ -138,7 +141,13 @@ export async function generateText(
           body: JSON.stringify(requestBody),
         });
         if (!resp.ok || !resp.body) {
-          throw new Error(`${resp.status} ${resp.statusText}`);
+          const errorText = await resp.text().catch(() => 'Unable to read error response');
+          console.error('OpenRouter streaming error response:', {
+            status: resp.status,
+            statusText: resp.statusText,
+            body: errorText
+          });
+          throw new Error(`OpenRouter API Error: ${resp.status} ${resp.statusText}. Response: ${errorText}`);
         }
         const reader = resp.body.getReader();
         const decoder = new TextDecoder();
@@ -171,7 +180,13 @@ export async function generateText(
           body: JSON.stringify(requestBody),
         });
         if (!resp.ok) {
-          throw new Error(`${resp.status} ${resp.statusText}`);
+          const errorText = await resp.text().catch(() => 'Unable to read error response');
+          console.error('OpenRouter non-streaming error response:', {
+            status: resp.status,
+            statusText: resp.statusText,
+            body: errorText
+          });
+          throw new Error(`OpenRouter API Error: ${resp.status} ${resp.statusText}. Response: ${errorText}`);
         }
         const json = await resp.json();
         collectedText = json.choices?.[0]?.message?.content || '';
